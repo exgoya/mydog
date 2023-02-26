@@ -1,0 +1,7 @@
+
+fastapi
+uvicorn
+odmantic
+motor
+aiohttp
+jinja2
