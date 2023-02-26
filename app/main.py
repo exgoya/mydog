@@ -1,14 +1,14 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Form, Response
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
+import aiohttp
 
 from app.models import mongodb
 from app.models.book import BookModel
+from app.models.auth import AuthModel
 from app.book_scraper import NaverBookScraper
-
-from .router import session
 
 BASE_DIR = Path(__file__).resolve().parent
 app = FastAPI()
@@ -17,41 +17,65 @@ app.mount("/static", StaticFiles(directory=BASE_DIR/"static"), name="static")
 templates = Jinja2Templates(directory=BASE_DIR/"templates")
 title = "mydog"
 
-app.include_router(session.router)
 
+@app.post("/login")
+async def login(request: Request, response: Response, userid: str = Form(...), password: str = Form(...)):
 
-@app.post('/login')
-def login(data: str):
-    email = data.username
-    password = data.password
-    user = 'asdf'
-    if not user:
-        # you can return any response or error of your choice
-        print("not ok")
-    elif password != password:
-        print("not ok")
+    auth = await mongodb.engine.find_one(AuthModel, AuthModel.userid == userid)
 
-    return {'status': 'Success'}
+    if (auth is not None):
+        if (auth.userid == userid):
+            if (auth.password == password):
+                response.set_cookie("userid", userid)
+            return templates.TemplateResponse("index.html", {"request": request, "title": title, "logon": userid})
+    return {'status': 'login failure'}
 
 
 @app.get("/login", response_class=HTMLResponse)
 async def getLogin(request: Request):
-    print(request.cookies)
+    userid = request.cookies.pop("userid")
+
+    if (userid):
+        return templates.TemplateResponse("index.html", {"request": request, "title": title, "logon": userid})
+    return templates.TemplateResponse("login.html", {"request": request, "title": title, "subname": "로그인"})
     # book = BookModel(keyword="파이썬", publisher='BJPublic',
     #                  price=1200, image='me.png')
     # print(await mongodb.engine.save(book))
-    return templates.TemplateResponse("login.html", {"request": request, "title": title})
+
+
+@app.get("/regist", response_class=HTMLResponse)
+async def getRegist(request: Request):
+
+    return templates.TemplateResponse("regist.html", {"request": request, "title": title, "subname": "회원가입"})
+
+
+@app.post("/regist", response_class=HTMLResponse)
+async def postRegist(request: Request, userid: str = Form(...), password: str = Form(...)):
+
+    auth = AuthModel(userid=userid, password=password)
+    print(auth)
+    await mongodb.engine.save(auth)
+    return templates.TemplateResponse("login.html", {"request": request, "title": title, "subname": "로그인", "welcomemsg": "회원가입 완료! 로그인 해주세요"})
 
 
 @app.get("/", response_class=HTMLResponse)
 async def root(request: Request):
-    # book = BookModel(keyword="파이썬", publisher='BJPublic',
-    #                  price=1200, image='me.png')
-    # print(await mongodb.engine.save(book))
+
     return templates.TemplateResponse("index.html", {"request": request, "title": title})
 
 
-@app.get("/search", response_class=HTMLResponse)
+@app.get("/validId", response_class=HTMLResponse)
+async def validId(request: Request, userid: str):
+    userid = userid
+    subname = "회원가입"
+    if await mongodb.engine.find_one(AuthModel, AuthModel.userid == userid):
+        print("exist userid")
+        # userid = await mongodb.engine.find(AuthModel, AuthModel.userid == userid)
+        return templates.TemplateResponse("regist.html", {"request": request, "title": title, "subname": subname, "userid": userid, "validinfo": "이미사용중인 아이디입니다"})
+    return templates.TemplateResponse("regist.html", {"request": request, "title": title, "subname": subname, "userid": userid, "validinfo": "사용가능한 아이디입니다"})
+
+
+@ app.get("/search", response_class=HTMLResponse)
 async def search(request: Request, q: str):
 
     # 1. 쿼리에서 검색어 추출
@@ -94,16 +118,16 @@ async def search(request: Request, q: str):
     )
 
 
-@app.exception_handler(404)
+@ app.exception_handler(404)
 async def custom_404_handler(request, __):
-    return templates.TemplateResponse("404.html", {"request": request, "title": "404"})
+    return templates.TemplateResponse("404.html", {"request": request, "title": title})
 
 
-@app.on_event("startup")
+@ app.on_event("startup")
 def on_app_start():
     mongodb.connect()
 
 
-@app.on_event("shutdown")
+@ app.on_event("shutdown")
 async def on_app_shutdown():
     mongodb.close()

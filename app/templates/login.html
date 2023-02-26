@@ -1,48 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <title>{{title}}</title>
-    <!-- <link href="https://unpkg.com/mvp.css" rel="stylesheet" /> -->
-  </head>
-  <style>
-    section {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-    }
-  </style>
-  <body>
-    <header>
-      <h1><a href="/">{{title}}</a></h1>
-      <div>
-       <div><a href="/regist">회원가입</a> </div>
-        <div><a href="/login">로그인</a></div> 
-       <div><a href="/regist">회원정보 수정</a> </div>
-       <div><a href="/regist">계시판</a> </div>
-      </div>
-        <form action="/login" method="post">
-        
-          <div class="container">
-            <label for="uname"><b>Username</b></label>
-            <input type="text" placeholder="Enter Username" name="uname" required>
-        
-            <label for="psw"><b>Password</b></label>
-            <input type="password" placeholder="Enter Password" name="psw" required>
-        
-            <button type="submit">Login</button>
-            <label>
-              <input type="checkbox" checked="checked" name="remember"> Remember me
-            </label>
-          </div>
-        
-          <div class="container" style="background-color:#f1f1f1">
-            <button type="button" class="cancelbtn">Cancel</button>
-            <span class="psw">Forgot <a href="#">password?</a></span>
-          </div>
-        </form>
-        
+{% include "header.html" %}
 
-    </header>
 
-  </body>
-</html>
+{% if welcomemsg %}
+{{welcomemsg}}
+{% endif %}
+
+      <section>
+    
+          <form action="/login" method="post">
+              <header>
+                  <h2>{{subname}}</h2>
+              </header>
+              <label for="uname"><b>Username</b></label>
+              <input type="text" placeholder="Enter Username" name="userid" size="20" required>
+              <label for="psw"><b>Password</b></label>
+              <input type="password" placeholder="Enter Password" name="password" size="20" required>
+              <button type="submit">{{subname}}</button>
+          </form>
+          
+      </section>
+
+{% include "footer.html" %}

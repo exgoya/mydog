@@ -2,8 +2,8 @@ from odmantic import Model
 
 
 class AuthModel(Model):
-    id: str
+    userid: str
     password: str
 
     class Config:
-        collection = "auth"
+        collection = "auths"

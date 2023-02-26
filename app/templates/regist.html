@@ -1,0 +1,23 @@
+{% include "header.html" %}
+    <script language=javascript>
+
+    </script>
+        <form id="id_form" action="/validId">
+            <input type="userid" placeholder="userid" id="id_input" name="userid" required 
+            {% if userid %} value={{userid}} {% endif %}
+            />
+
+            <button type="submit">중복확인</button>
+            {% if validinfo %}
+            {{validinfo}}
+            {% endif %}
+        </form>
+        <form id="regist_form" action="/regist" method="post">
+            <input type="hidden" placeholder="ID" id="id_input" name="userid" required 
+             {% if userid %} value={{userid}} {% endif %} />
+            <input type="password" placeholder="password" id="password" name="password" required />
+            <button type="submit">{{subname}}</button>
+        </form>
+
+
+{% include "footer.html" %}
