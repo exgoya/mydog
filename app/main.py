@@ -4,10 +4,12 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
 
+from beanie import init_beanie
+
 from app.models import mongodb
 from app.models.book import BookModel
 from app.models.auth import AuthModel
-from app.models.board import BoardModel
+from app.models.board import Board
 from app.book_scraper import NaverBookScraper
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -52,26 +54,29 @@ async def manageDelete(request: Request, response: Response, userid: str = Form(
     return response
 
 
-@app.post("/board/add", response_class=HTMLResponse)
-async def boardPut(request: Request, board: BoardModel):
+# @app.post("/board/add", response_class=HTMLResponse)
+# async def boardPut(request: Request, board: Board):
 
-    context = {"request": request, "title": title,
-               "subname": "게시판"}
-    boards = await mongodb.engine.find(BoardModel)
-    context["boards"] = boards
+#     await init_beanie(mongodb.beanie_db, document_models=[Board])
+#     asyncio.board.create()
 
-    return templates.TemplateResponse("board.html", await validLogonCtx(context, request))
+#     context = {"request": request, "title": title,
+#                "subname": "게시판"}
+#     # boards = await mongodb.engine.find(Board)
+#     # context["boards"] = boards
+
+#     return templates.TemplateResponse("board.html", await validLogonCtx(context, request))
 
 
-@app.get("/board", response_class=HTMLResponse)
-async def board(request: Request):
+# @app.get("/board", response_class=HTMLResponse)
+# async def board(request: Request):
 
-    context = {"request": request, "title": title,
-               "subname": "게시판"}
-    boards = await mongodb.engine.find(BoardModel)
-    context["boards"] = boards
+#     context = {"request": request, "title": title,
+#                "subname": "게시판"}
+#     boards = await mongodb.engine.find(BoardModel)
+#     context["boards"] = boards
 
-    return templates.TemplateResponse("board.html", await validLogonCtx(context, request))
+#     return templates.TemplateResponse("board.html", await validLogonCtx(context, request))
 
 
 @app.get("/auth/manage", response_class=HTMLResponse)
