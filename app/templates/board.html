@@ -1,0 +1,15 @@
+{% include "header.html" %}
+<header>
+  <h2>{{subname}}</h2>
+</header>  
+<section>
+<form method="post">
+<input type="submit" value="삭제" formaction="/auth/manage/update">
+<input type="submit" value="추가" formaction="/auth/manage/delete">     
+</form>
+</section>
+
+<main>
+
+</main>
+{% include "footer.html" %}

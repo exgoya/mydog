@@ -1,0 +1,29 @@
+{% include "header.html" %}
+
+      <section>
+    
+          <form method="post">
+              <header>
+                  <h2>{{subname}}</h2>
+              </header>
+              <label for="uname"><b>Username</b></label>
+              <input type="text" placeholder="Enter Username" name="userid" 
+              {% if logon %}
+              value={{logon}} 
+              {% endif %} size="20" disabled>
+
+              <input type="hidden" placeholder="Enter Username" name="userid" 
+              {% if logon %}
+              value={{logon}} 
+              {% endif %} size="20" >
+
+
+              <label for="psw"><b> Password</b></label>
+              <input type="password" placeholder="Enter Password" name="password" size="20" required>
+              <input type="submit" value="수정" formaction="/auth/manage/update">
+              <input type="submit" value="탈퇴" formaction="/auth/manage/delete">
+          </form>
+          
+      </section>
+
+{% include "footer.html" %}

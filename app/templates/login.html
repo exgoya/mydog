@@ -1,8 +1,8 @@
 {% include "header.html" %}
 
 
-{% if welcomemsg %}
-{{welcomemsg}}
+{% if msg %}
+{{msg}}
 {% endif %}
 
       <section>
@@ -16,6 +16,7 @@
               <label for="psw"><b>Password</b></label>
               <input type="password" placeholder="Enter Password" name="password" size="20" required>
               <button type="submit">{{subname}}</button>
+
           </form>
           
       </section>

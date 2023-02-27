@@ -3,11 +3,11 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
-import aiohttp
 
 from app.models import mongodb
 from app.models.book import BookModel
 from app.models.auth import AuthModel
+from app.models.board import BoardModel
 from app.book_scraper import NaverBookScraper
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -18,6 +18,79 @@ templates = Jinja2Templates(directory=BASE_DIR/"templates")
 title = "mydog"
 
 
+async def validLogonCtx(context: dict, request: Request):
+    userid = request.cookies.get('userid')
+    if (userid):
+        context["logon"] = userid
+        context["msg"] = "이미 로그인된 유저입니다."
+    return context
+
+
+@app.post("/auth/manage/update", response_class=HTMLResponse)
+async def manageUpdate(request: Request, response: Response, userid: str = Form(...), password: str = Form(...)):
+    auth = await mongodb.engine.find_one(AuthModel, AuthModel.userid == userid)
+    auth.password = password
+    await mongodb.engine.save(auth)
+
+    context = {"request": request, "title": title,
+               "subname": "변경"}
+    return templates.TemplateResponse("index.html", await validLogonCtx(context, request))
+
+
+@app.post("/auth/manage/delete", response_class=HTMLResponse)
+async def manageDelete(request: Request, response: Response, userid: str = Form(...)):
+
+    await mongodb.engine.remove(AuthModel, AuthModel.userid == userid)
+    print("delete user!")
+    context = {"request": request,
+               "title": title, "subname": "변경"}
+
+    response = templates.TemplateResponse(
+        "index.html", context)
+    response.delete_cookie("userid")
+    print("delete cookie!")
+    return response
+
+
+@app.post("/board/add", response_class=HTMLResponse)
+async def boardPut(request: Request, board: BoardModel):
+
+    context = {"request": request, "title": title,
+               "subname": "게시판"}
+    boards = await mongodb.engine.find(BoardModel)
+    context["boards"] = boards
+
+    return templates.TemplateResponse("board.html", await validLogonCtx(context, request))
+
+
+@app.get("/board", response_class=HTMLResponse)
+async def board(request: Request):
+
+    context = {"request": request, "title": title,
+               "subname": "게시판"}
+    boards = await mongodb.engine.find(BoardModel)
+    context["boards"] = boards
+
+    return templates.TemplateResponse("board.html", await validLogonCtx(context, request))
+
+
+@app.get("/auth/manage", response_class=HTMLResponse)
+async def manage(request: Request):
+
+    context = {"request": request, "title": title,
+               "subname": "변경"}
+    return templates.TemplateResponse("manageAuth.html", await validLogonCtx(context, request))
+
+
+@app.get("/logout", response_class=HTMLResponse)
+async def logout(request: Request, response: Response):
+    response = templates.TemplateResponse(
+        "index.html", {"request": request, "title": title})
+    print("delete cookie!")
+    response.delete_cookie("userid")
+    return response
+
+
 @app.post("/login")
 async def login(request: Request, response: Response, userid: str = Form(...), password: str = Form(...)):
 
@@ -26,18 +99,20 @@ async def login(request: Request, response: Response, userid: str = Form(...), p
     if (auth is not None):
         if (auth.userid == userid):
             if (auth.password == password):
+                response = templates.TemplateResponse(
+                    "index.html", {"request": request, "title": title, "logon": userid})
                 response.set_cookie("userid", userid)
-            return templates.TemplateResponse("index.html", {"request": request, "title": title, "logon": userid})
-    return {'status': 'login failure'}
+                print("logcookie!" + userid)
+                return response
+    return templates.TemplateResponse("login.html", {"request": request, "title": title, "subname": "로그인", "msg": "회원정보가 맞지 않습니다. 다시 입력해주세요"})
 
 
 @app.get("/login", response_class=HTMLResponse)
 async def getLogin(request: Request):
-    userid = request.cookies.pop("userid")
 
-    if (userid):
-        return templates.TemplateResponse("index.html", {"request": request, "title": title, "logon": userid})
-    return templates.TemplateResponse("login.html", {"request": request, "title": title, "subname": "로그인"})
+    context = {"request": request, "title": title, "subname": "로그인"}
+
+    return templates.TemplateResponse("login.html", await validLogonCtx(context, request))
     # book = BookModel(keyword="파이썬", publisher='BJPublic',
     #                  price=1200, image='me.png')
     # print(await mongodb.engine.save(book))
@@ -55,24 +130,26 @@ async def postRegist(request: Request, userid: str = Form(...), password: str = 
     auth = AuthModel(userid=userid, password=password)
     print(auth)
     await mongodb.engine.save(auth)
-    return templates.TemplateResponse("login.html", {"request": request, "title": title, "subname": "로그인", "welcomemsg": "회원가입 완료! 로그인 해주세요"})
+    return templates.TemplateResponse("login.html", {"request": request, "title": title, "subname": "로그인", "msg": "회원가입 완료! 로그인 해주세요"})
 
 
 @app.get("/", response_class=HTMLResponse)
 async def root(request: Request):
-
-    return templates.TemplateResponse("index.html", {"request": request, "title": title})
+    context = {"request": request, "title": title}
+    return templates.TemplateResponse("index.html", await validLogonCtx(context, request))
 
 
 @app.get("/validId", response_class=HTMLResponse)
 async def validId(request: Request, userid: str):
-    userid = userid
     subname = "회원가입"
+    context = {"request": request, "title": title, "subname": subname,
+               "userid": userid, "validinfo": "사용가능한 아이디입니다"}
     if await mongodb.engine.find_one(AuthModel, AuthModel.userid == userid):
         print("exist userid")
         # userid = await mongodb.engine.find(AuthModel, AuthModel.userid == userid)
-        return templates.TemplateResponse("regist.html", {"request": request, "title": title, "subname": subname, "userid": userid, "validinfo": "이미사용중인 아이디입니다"})
-    return templates.TemplateResponse("regist.html", {"request": request, "title": title, "subname": subname, "userid": userid, "validinfo": "사용가능한 아이디입니다"})
+        context = {"request": request, "title": title, "subname": subname,
+                   "userid": userid, "validinfo": "이미사용중인 아이디입니다"}
+    return templates.TemplateResponse("regist.html", context)
 
 
 @ app.get("/search", response_class=HTMLResponse)
@@ -120,7 +197,7 @@ async def search(request: Request, q: str):
 
 @ app.exception_handler(404)
 async def custom_404_handler(request, __):
-    return templates.TemplateResponse("404.html", {"request": request, "title": title})
+    return templates.TemplateResponse("404.html", await validLogonCtx({"request": request, "title": title}, request))
 
 
 @ app.on_event("startup")
