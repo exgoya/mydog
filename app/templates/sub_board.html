@@ -14,7 +14,8 @@
 </header>  
   {% if boards %}
 
-      <h3 style="color: gray;text-align:center">{{boards|length}}개 게시판</h3>
+      <h3 style="color: gray;text-align:center">{{boards|length}}개 게시물</h3>
+
 
   <section>
     <table>
@@ -22,7 +23,7 @@
         {% if logon %}
       <th>check</th>
       {% endif %}
-      <th>게시판</th>
+      <th>게시물</th>
       <th>만든날짜</th>
       <th>생성자</th>
       </thead>
@@ -30,13 +31,8 @@
     {% for board in boards %}
 
       <tbody>
-        {% if logon %}
-        <td>
-          <input type="checkbox" name="titles" value={{board.title}}>
-        </td>
-        {% endif %}
       <td>
-        {% set boardlink = "/boards/sub/"+board.title %}
+        {% set boardlink = "/boards/"+board.title %}
         <a href={{boardlink}}>
         {% if board.title|length > 10 %}
         <!--  -->
@@ -54,23 +50,25 @@
     <center>
     </section>
 
-    <center> <input type="submit" value="삭제"/></center>
-    </form>
 
   {% else %}
-  <center><h3 style="color: gray">게시판이 없습니다</h3></center>
+  <center><h3 style="color: gray">게시물이 없습니다</h3></center>
   {% endif %}
 
   {% if logon %}
 
 
 <section>
-  <form method="post" name = "게시판 추가">
-    <label><b>게시판 추가</b></label>
+  <form method="post" name = "게시물 추가">
+    <label><b>게시물 추가</b></label>
+    <label><b>제목</b></label>
     <input type="hidden" name="userid" value={{logon}} size="20" required>
-    <input type="text" placeholder="게시판 이름" name="boardTitle" size="20" required/>
+    <input type="hidden" name="boardTitle" value={{boardTitle}} size="20" required>
+    <input type="text" placeholder="제목" name="sub_title" size="20" required/>
+    <label><b>설명</b></label>
+    <input type="text" placeholder="설명" name="sub_desc" size="20" required/>
 
-    <input type="submit" value="추가" formaction="/boards/add"/>     
+    <input type="submit" value="추가" formaction="/boards/sub/add"/>     
 
 
 </section>

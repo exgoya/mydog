@@ -1,10 +1,12 @@
+
 from fastapi import APIRouter, Request, Form
+
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from app.models.board import Board
 from pathlib import Path
 from app.routers.auth import Auth
-
+from odmantic import query
 from app.models import mongodb
 BASE_DIR = Path(__file__).resolve().parent.parent
 templates = Jinja2Templates(directory=BASE_DIR/"templates")
@@ -29,26 +31,24 @@ async def boardPut(request: Request):
 
 
 @router.post("/add", response_class=HTMLResponse)
-async def boardPut(request: Request, userid: str = Form(...), title: str = Form(...)):
+async def boardAdd(request: Request, userid: str = Form(...), boardTitle: str = Form(...)):
+    context = await validLogonCtx({"request": request, "title": title, "subname": "게시판"}, request)
+    board = await mongodb.engine.find_one(Board, Board.title == boardTitle)
 
-    context = {"request": request, "title": title, "subname": "게시판"}
-
-    if (userid is not None):
-        await mongodb.engine.save(Board(title=title, userid=userid))
-
-        return templates.TemplateResponse("board.html", await validLogonCtx(context, request))
-
-    context["input"]
-    return templates.TemplateResponse("board.html", await validLogonCtx(context, request))
+    if (board is not None):
+        context["boardmsg"] = "이미 존재하는 게시판 입니다"
+        context["boards"] = await mongodb.engine.find(Board)
+    else:
+        await mongodb.engine.save(Board(title=boardTitle, userid=userid))
+        context["boards"] = await mongodb.engine.find(Board)
+    return templates.TemplateResponse("board.html", context)
 
 
-# @router.post("/board/add", response_class=HTMLResponse)
-# async def boardPut(request: Request, userid: str = Form(...), title: str = Form(...)):
+@router.post("/delete", response_class=HTMLResponse)
+async def boardDelete(request: Request, boardTitles: list = Form(...)):
+    delcnt = await mongodb.engine.remove(Board, query.in_(Board.title, boardTitles))
 
-#     await mongodb.engine.save(Board(title=title, userid=userid))
-#     context = {"request": request, "title": title,
-#                "subname": "게시판"}
-#     # boards = await mongodb.engine.find(Board)
-#     # context["boards"] = boards
-
-#     return templates.TemplateResponse("board.html", await validLogonCtx(context, request))
+    context = await validLogonCtx({"request": request, "title": title, "subname": "게시판"}, request)
+    context["boards"] = await mongodb.engine.find(Board)
+    context["boardmsg"] = str(delcnt) + "개 삭제 되었습니다"
+    return templates.TemplateResponse("board.html", context)

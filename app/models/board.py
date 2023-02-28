@@ -1,11 +1,29 @@
-from odmantic import Model
+from odmantic import Model, EmbeddedModel, Field
 from datetime import datetime
+from typing import List, Union
+
+
+class Comment(EmbeddedModel):
+    desc: str
+    cts: datetime = datetime.now()
+
+
+class SubBoard(EmbeddedModel):
+    title: str
+    desc: str
+    cts: datetime = datetime.now()
+    uts: datetime = datetime.now()
+    comment: Union[List[Comment], None] = None
 
 
 class Board(Model):
-    title: str
+    title: str = Field(unique=True)
     userid: str
     ts: datetime = datetime.now()
+    subBoards: Union[List[SubBoard], None]
+    # subBoards: {
+
+    # }
 
     class Config:
         collection = "boards"
