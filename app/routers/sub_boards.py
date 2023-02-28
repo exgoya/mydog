@@ -22,23 +22,30 @@ validLogonCtx = Auth.validLogonCtx
 
 @router.get("/{boardTitle}", response_class=HTMLResponse)
 async def subBoard(request: Request, boardTitle: str):
-    context = await validLogonCtx({"request": request, "title": title, "subname": boardTitle + " 게시판"}, request)
-    context["boardTitle"] = boardTitle
+    context = await validLogonCtx({"request": request, "title": title, "subname": boardTitle + " 게시판", "boardTitle": boardTitle}, request)
+
+    board = await mongodb.engine.find_one(Board, Board.title == boardTitle)
+    if (board.subBoards is not None):
+        context["subBoards"] = board.subBoards
     return templates.TemplateResponse("sub_board.html", context)
 
 
 @router.post("/add", response_class=HTMLResponse)
 async def boardAdd(request: Request, userid: str = Form(...), boardTitle: str = Form(...), sub_title: str = Form(...), sub_desc: str = Form(...)):
-    addboard = await mongodb.engine.find_one(Board, Board.title == boardTitle)
-    if (addboard.subBoards is None):
-        addboard.subBoards = [SubBoard(title=sub_title, desc=sub_desc)]
+
+    context = await validLogonCtx({"request": request, "title": title, "subname": boardTitle + " 게시판", "boardTitle": boardTitle}, request)
+
+    board = await mongodb.engine.find_one(Board, Board.title == boardTitle)
+    if (board.subBoards is None):
+        board.subBoards = [
+            SubBoard(title=sub_title, desc=sub_desc, userid=userid)]
     else:
-        addboard.subBoards.append(SubBoard(title=sub_title, desc=sub_desc))
+        board.subBoards.append(
+            SubBoard(title=sub_title, desc=sub_desc, userid=userid))
 
-    await mongodb.engine.save(addboard)
-
-    print(boardTitle)
-    pass
+    await mongodb.engine.save(board)
+    context["subBoards"] = board.subBoards
+    return templates.TemplateResponse("sub_board.html", context)
 
 
 # @router.post("/add", response_class=HTMLResponse)

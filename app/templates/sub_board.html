@@ -12,37 +12,38 @@
   <h2>{{subname}}</h2>
   
 </header>  
-  {% if boards %}
+  {% if subBoards %}
 
-      <h3 style="color: gray;text-align:center">{{boards|length}}개 게시물</h3>
+      <h3 style="color: gray;text-align:center">{{subBoards|length}}개 게시물</h3>
 
 
   <section>
     <table>
       <thead>
-        {% if logon %}
-      <th>check</th>
-      {% endif %}
       <th>게시물</th>
-      <th>만든날짜</th>
-      <th>생성자</th>
+      <th>내용</th>
+      <th>생성일</th>
+      <th>수정일</th>
+      <th>작성자</th>
       </thead>
       <form action="/boards/delete" method="post">
-    {% for board in boards %}
+    {% for subBoard in subBoards %}
 
       <tbody>
       <td>
-        {% set boardlink = "/boards/"+board.title %}
+        {% set boardlink = "/boards/"+subBoard.title %}
         <a href={{boardlink}}>
-        {% if board.title|length > 10 %}
+        {% if subBoard.title|length > 10 %}
         <!--  -->
-        {{board.title[:10]}}...
+        {{subBoard.title[:10]}}...
         <!--  -->
-        {% else %} {{board.title}} {% endif %}
+        {% else %} {{subBoard.title}} {% endif %}
         </a>
       </td>
-      <td>{{board.ts.strftime("%Y-%m-%d %H:%M")}}</td>
-        <td>{{board.userid}}</td>
+      <td>{{subBoard.desc}}</td>
+      <td>{{subBoard.cts.strftime("%Y-%m-%d %H:%M")}}</td>
+      <td>{{subBoard.uts.strftime("%Y-%m-%d %H:%M")}}</td>
+      <td>{{subBoard.userid}}</td>
 
     </tbody>
     {% endfor %}

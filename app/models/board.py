@@ -6,6 +6,7 @@ from typing import List, Union
 class Comment(EmbeddedModel):
     desc: str
     cts: datetime = datetime.now()
+    userid: str
 
 
 class SubBoard(EmbeddedModel):
@@ -13,6 +14,7 @@ class SubBoard(EmbeddedModel):
     desc: str
     cts: datetime = datetime.now()
     uts: datetime = datetime.now()
+    userid: str
     comment: Union[List[Comment], None] = None
 
 
