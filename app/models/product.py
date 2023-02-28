@@ -4,6 +4,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel
 
 from beanie import Document, Indexed, init_beanie
+from app.models.book import BookModel
 
 
 class Category(BaseModel):

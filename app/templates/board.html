@@ -4,12 +4,38 @@
 </header>  
 <section>
 <form method="post">
-<input type="submit" value="삭제" formaction="/auth/manage/update">
-<input type="submit" value="추가" formaction="/auth/manage/delete">     
+<input type="submit" value="삭제" formaction="/boards/delete">
+<input type="submit" value="추가" formaction="/boards/add">     
 </form>
 </section>
 
 <main>
+  {% if boards %}
+  <!--  -->
+  <center>
+    <h3 style="color: gray">{{boards|length}}개 게시판</h3>
+  </center>
+  <section>
+    {% for board in boards %}
+    <div>
+      <p>
+        {% if board.title|length > 10 %}
+        <!--  -->
+        {{board.title[:10]}}...
+        <!--  -->
+        {% else %} {{board.title}} {% endif %}
+      </p>
+      <p>{{board.ts}}</p>
+      <p>{{board.userid}}</p>
+    </div>
+    {% endfor %}
+  </section>
 
+  <hr />
+
+  <!--  -->
+  {% else %}
+  <center><h3 style="color: gray">Please Input Keyword...</h3></center>
+  {% endif %}
 </main>
 {% include "footer.html" %}
