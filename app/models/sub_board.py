@@ -1,4 +1,4 @@
-from odmantic import Model
+from odmantic import Model, ObjectId
 from datetime import datetime
 
 
@@ -8,7 +8,7 @@ class SubBoard(Model):
     cts: datetime = datetime.now()
     uts: datetime = datetime.now()
     userid: str
-    boardId: str
+    boardId: ObjectId
 
     class Config:
         collection = "sub_boards"

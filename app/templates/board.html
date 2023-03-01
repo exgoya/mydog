@@ -8,10 +8,6 @@
 </script>
 {% endif %}
 
-<header>
-  <h2>{{subname}}</h2>
-  
-</header>  
   {% if boards %}
 
       <h3 style="color: gray;text-align:center">{{boards|length}}개 게시판</h3>
@@ -32,15 +28,15 @@
       <tbody>
         {% if logon %}
         <td>
-          <input type="checkbox" name="titles" value={{board.title}}>
+          <input type="checkbox" name="boardId" value={{board.id}}>
         </td>
         {% endif %}
       <td>
-        {% set boardlink = "/boards/sub/"+board.title+"?boardId="%}
+        {% set boardlink = "/boards/sub/"%}
         <a href={{boardlink}}{{board.id}}>
-        {% if board.title|length > 10 %}
+        {% if board.title|length > 40 %}
         <!--  -->
-        {{board.title[:10]}}...
+        {{board.title[:40]}}...
         <!--  -->
         {% else %} {{board.title}} {% endif %}
         </a>

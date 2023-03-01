@@ -10,10 +10,9 @@
 <main>
 <header>
   <h2>{{subname}}</h2>
-  
-</header>  
-  {% if subBoards %}
 
+  {% if subBoards %}
+</header>
       <h3 style="color: gray;text-align:center">{{subBoards|length}}개 게시물</h3>
 
 
@@ -30,8 +29,8 @@
     {% for subBoard in subBoards %}
       <tbody>
       <td>
-        {% set boardlink = "/boards/cmt/"+boardTitle+"/"+subBoard.title+"?boardId=" %}
-        {% set boardlinktail = "&subBoardId=" %}
+        {% set boardlink = "/boards/cmt/" %}
+        {% set boardlinktail = "/" %}
         <a href={{boardlink}}{{subBoard.boardId}}{{boardlinktail}}{{subBoard.id}}>
         {% if subBoard.title|length > 10 %}
         <!--  -->

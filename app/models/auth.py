@@ -1,8 +1,8 @@
-from odmantic import Model
+from odmantic import Model, Field
 
 
 class AuthModel(Model):
-    userid: str
+    userid: str = Field(unique=True)
     password: str
 
     class Config:

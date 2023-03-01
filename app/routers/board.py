@@ -1,12 +1,15 @@
 
-from fastapi import APIRouter, Request, Form
+from fastapi import APIRouter, Request, Form, exception_handlers
+
 
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from app.models.board import Board
+from app.models.sub_board import SubBoard
+from app.models.comment import Comment
 from pathlib import Path
 from app.routers.auth import Auth
-from odmantic import query
+from odmantic import query, ObjectId
 from app.models import mongodb
 from datetime import datetime
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -46,9 +49,17 @@ async def boardAdd(request: Request, userid: str = Form(...), boardTitle: str = 
 
 
 @router.post("/delete", response_class=HTMLResponse)
-async def boardDelete(request: Request, titles: list = Form(...)):
-    print(titles)
-    delcnt = await mongodb.engine.remove(Board, query.in_(Board.title, titles))
+async def boardDelete(request: Request, boardId: list[ObjectId] = Form(...)):
+    print(boardId)
+
+    # remove board
+    delcnt = await mongodb.engine.remove(Board, query.in_(Board.id, boardId))
+
+    # remove subBoard
+    print(await mongodb.engine.remove(SubBoard, query.in_(SubBoard.boardId, boardId)))
+
+    # remove comment
+    print(await mongodb.engine.remove(Comment, query.in_(Comment.boardId, boardId)))
 
     context = await validLogonCtx({"request": request, "title": title, "subname": "게시판"}, request)
     context["boards"] = await mongodb.engine.find(Board)
