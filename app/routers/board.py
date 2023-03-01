@@ -25,7 +25,7 @@ validLogonCtx = Auth.validLogonCtx
 
 
 @router.get("/", response_class=HTMLResponse)
-async def boardPut(request: Request):
+async def boardGet(request: Request):
 
     boards = await mongodb.engine.find(Board)
 

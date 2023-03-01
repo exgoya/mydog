@@ -56,17 +56,6 @@ async def manageDelete(request: Request, response: Response, userid: str = Form(
     return response
 
 
-# @app.get("/board", response_class=HTMLResponse)
-# async def board(request: Request):
-
-#     context = {"request": request, "title": title,
-#                "subname": "게시판"}
-#     boards = await mongodb.engine.find(BoardModel)
-#     context["boards"] = boards
-
-#     return templates.TemplateResponse("board.html", await validLogonCtx(context, request))
-
-
 @app.get("/auth/manage", response_class=HTMLResponse)
 async def manage(request: Request):
 

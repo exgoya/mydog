@@ -22,20 +22,6 @@ title = "mydog"
 validLogonCtx = Auth.validLogonCtx
 
 
-@router.get("/{boardId}", response_class=HTMLResponse)
-async def subBoard(request: Request, boardId: ObjectId):
-
-    sboard = await mongodb.engine.find(SubBoard, SubBoard.boardId == boardId)
-    board = await mongodb.engine.find_one(Board, Board.id == boardId)
-
-    context = await validLogonCtx({"request": request, "title": title, "subname": board.title + " 게시판", "boardTitle": board.title}, request)
-
-    if (sboard is not None):
-        context["subBoards"] = sboard
-        context["boardId"] = boardId
-    return templates.TemplateResponse("sub_board.html", context)
-
-
 @router.post("/add", response_class=HTMLResponse)
 async def boardAdd(request: Request, userid: str = Form(...), boardTitle: str = Form(...), sub_title: str = Form(...), sub_desc: str = Form(...), boardId: ObjectId = Form(...)):
 
@@ -90,4 +76,18 @@ async def subBoardDelete(request: Request, boardId: ObjectId = Form(...), subBoa
         context["subBoards"] = sboard
         context["boardId"] = boardId
         context["board"] = board
+    return templates.TemplateResponse("sub_board.html", context)
+
+
+@router.get("/{boardId}", response_class=HTMLResponse)
+async def subBoard(request: Request, boardId: ObjectId):
+
+    sboard = await mongodb.engine.find(SubBoard, SubBoard.boardId == boardId)
+    board = await mongodb.engine.find_one(Board, Board.id == boardId)
+
+    context = await validLogonCtx({"request": request, "title": title, "subname": board.title + " 게시판", "boardTitle": board.title}, request)
+
+    if (sboard is not None):
+        context["subBoards"] = sboard
+        context["boardId"] = boardId
     return templates.TemplateResponse("sub_board.html", context)

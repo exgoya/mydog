@@ -33,8 +33,6 @@
       <input type="text" placeholder={{subBoard.desc}} name="desc" size="20" required/>
   
       <input type="submit" value="수정" formaction="/boards/sub/update"/>     
-      <input type="submit" value="삭제" formaction="/boards/sub/delete"/>     
-  
     </form>
   </details>
     <form method="post" >
@@ -61,7 +59,7 @@
       </thead>
       <form action="/boards/delete" method="post">
 
-    {% set boardlink = "/boards/cmt/delete/" %}
+    {% set boardlink = "/boards/cmt/delete?cmtId=" %}
 
     {% for comment in comments %}
 
