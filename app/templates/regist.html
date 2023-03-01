@@ -2,6 +2,8 @@
     <script language=javascript>
 
     </script>
+    <section>
+        <article>
         <form id="id_form" action="/validId">
             <input type="userid" placeholder="userid" id="id_input" name="userid" required 
             {% if userid %} value={{userid}} {% endif %}
@@ -18,6 +20,7 @@
             <input type="password" placeholder="password" id="password" name="password" required />
             <button type="submit">{{subname}}</button>
         </form>
-
+    </article>
+    </section>
 
 {% include "footer.html" %}

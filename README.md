@@ -9,7 +9,7 @@ https://www.mongodb.com/docs/manual/administration/install-community/
 # install
 git clone https://github.com/exgoya/mydog.git  
 cd mydog  
-python -m venv venv  
+python3.9 -m venv venv  
 source venv/bin/activate  
 python -m pip install --upgrade pip  
 python -m pip install -r requirements.txt           
@@ -25,3 +25,7 @@ vi secrets.json
 }    
 ```
 > naver_api 는 https://developers.naver.com/apps/#/register 사이트에서 신청해야 합니다.  
+
+# api docs
+/docs  
+/redoc  
