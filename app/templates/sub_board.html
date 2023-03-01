@@ -7,7 +7,7 @@
   alert("{{alertmsg}}") ;
 </script>
 {% endif %}
-
+<main>
 <header>
   <h2>{{subname}}</h2>
   
@@ -25,14 +25,14 @@
       <th>생성일</th>
       <th>수정일</th>
       <th>작성자</th>
+      <th></th>
       </thead>
-      <form action="/boards/delete" method="post">
     {% for subBoard in subBoards %}
-
       <tbody>
       <td>
-        {% set boardlink = "/boards/"+subBoard.title %}
-        <a href={{boardlink}}>
+        {% set boardlink = "/boards/cmt/"+boardTitle+"/"+subBoard.title+"?boardId=" %}
+        {% set boardlinktail = "&subBoardId=" %}
+        <a href={{boardlink}}{{subBoard.boardId}}{{boardlinktail}}{{subBoard.id}}>
         {% if subBoard.title|length > 10 %}
         <!--  -->
         {{subBoard.title[:10]}}...
@@ -44,11 +44,15 @@
       <td>{{subBoard.cts.strftime("%Y-%m-%d %H:%M")}}</td>
       <td>{{subBoard.uts.strftime("%Y-%m-%d %H:%M")}}</td>
       <td>{{subBoard.userid}}</td>
+      
+      <td>
+        <a href={{boardlink}}{{subBoard.boardId}}{{boardlinktail}}{{subBoard.id}}>상세보기</a>
+      </td>
 
     </tbody>
+    </form>
     {% endfor %}
     </table>
-    <center>
     </section>
 
 
@@ -62,17 +66,17 @@
 <section>
   <form method="post" name = "게시물 추가">
     <label><b>게시물 추가</b></label>
-    <label><b>제목</b></label>
     <input type="hidden" name="userid" value={{logon}} size="20" required>
     <input type="hidden" name="boardTitle" value={{boardTitle}} size="20" required>
+    <input type="hidden" name="boardId" value={{boardId}} size="20" required>
     <input type="text" placeholder="제목" name="sub_title" size="20" required/>
-    <label><b>설명</b></label>
     <input type="text" placeholder="설명" name="sub_desc" size="20" required/>
 
     <input type="submit" value="추가" formaction="/boards/sub/add"/>     
 
-
+  </form>
 </section>
+</main>
 {% endif %}
 
 {% include "footer.html" %}

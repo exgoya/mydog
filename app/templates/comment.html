@@ -1,0 +1,64 @@
+{% include "header.html" %}
+
+{%if boardmsg%}
+{% set alertmsg = boardmsg %}
+<script> 
+  
+  alert("{{alertmsg}}") ;
+</script>
+{% endif %}
+<main>
+<header>
+  <h2>{{subname}}</h2>
+  
+</header>  
+  {% if comments %}
+
+      <h3 style="color: gray;text-align:center">{{comments|length}}개 댓글</h3>
+
+
+  <section>
+    <table>
+      <thead>
+      <th>댓글</th>
+      <th>작성일</th>
+      <th>작성자</th>
+      </thead>
+      <form action="/boards/delete" method="post">
+    {% for comment in comments %}
+
+      <tbody>
+      <td>{{comment.desc}}</td>
+      <td>{{comment.cts.strftime("%Y-%m-%d %H:%M")}}</td>
+      <td>{{comment.userid}}</td>
+
+    </tbody>
+    {% endfor %}
+    </table>
+    </section>
+
+
+  {% else %}
+  <center><h3 style="color: gray">댓글이 없습니다</h3></center>
+  {% endif %}
+
+  {% if logon %}
+
+
+<section>
+  <form method="post" name = "댓글 추가">
+    <input type="hidden" name="userid" value={{logon}} size="20" required>
+    <input type="hidden" name="boardTitle" value={{boardTitle}} size="20" required>
+    <input type="hidden" name="subBoardTitle" value={{subBoardTitle}} size="20" required>
+    <input type="hidden" name="boardId" value={{boardId}} size="20" required>
+    <input type="hidden" name="subBoardId" value={{subBoardId}} size="20" required>
+    <input type="text" placeholder="댓글" name="desc" size="20" required/>
+
+    <input type="submit" value="추가" formaction="/boards/cmt/add"/>     
+
+  </form>
+</section>
+</main>
+{% endif %}
+
+{% include "footer.html" %}

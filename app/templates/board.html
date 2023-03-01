@@ -36,8 +36,8 @@
         </td>
         {% endif %}
       <td>
-        {% set boardlink = "/boards/sub/"+board.title %}
-        <a href={{boardlink}}>
+        {% set boardlink = "/boards/sub/"+board.title+"?boardId="%}
+        <a href={{boardlink}}{{board.id}}>
         {% if board.title|length > 10 %}
         <!--  -->
         {{board.title[:10]}}...
@@ -51,7 +51,6 @@
     </tbody>
     {% endfor %}
     </table>
-    <center>
     </section>
 
     <center> <input type="submit" value="삭제"/></center>
@@ -71,8 +70,7 @@
     <input type="text" placeholder="게시판 이름" name="boardTitle" size="20" required/>
 
     <input type="submit" value="추가" formaction="/boards/add"/>     
-
-
+  </form>
 </section>
 {% endif %}
 

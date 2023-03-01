@@ -7,15 +7,15 @@ from pathlib import Path
 from app.models import mongodb
 from app.models.book import BookModel
 from app.models.auth import AuthModel
-from .routers import boards, sub_boards
-
+from .routers import board, sub_board, comment
 from app.book_scraper import NaverBookScraper
 
 BASE_DIR = Path(__file__).resolve().parent
 app = FastAPI()
 
-app.include_router(boards.router)
-app.include_router(sub_boards.router)
+app.include_router(board.router)
+app.include_router(sub_board.router)
+app.include_router(comment.router)
 
 app.mount("/static", StaticFiles(directory=BASE_DIR/"static"), name="static")
 templates = Jinja2Templates(directory=BASE_DIR/"templates")

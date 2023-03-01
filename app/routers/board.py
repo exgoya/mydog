@@ -8,6 +8,7 @@ from pathlib import Path
 from app.routers.auth import Auth
 from odmantic import query
 from app.models import mongodb
+from datetime import datetime
 BASE_DIR = Path(__file__).resolve().parent.parent
 templates = Jinja2Templates(directory=BASE_DIR/"templates")
 
@@ -24,9 +25,9 @@ validLogonCtx = Auth.validLogonCtx
 async def boardPut(request: Request):
 
     boards = await mongodb.engine.find(Board)
+
     context = {"request": request, "title": title,
                "subname": "게시판", "boards": boards}
-
     return templates.TemplateResponse("board.html", await validLogonCtx(context, request))
 
 
@@ -39,14 +40,15 @@ async def boardAdd(request: Request, userid: str = Form(...), boardTitle: str = 
         context["boardmsg"] = "이미 존재하는 게시판 입니다"
         context["boards"] = await mongodb.engine.find(Board)
     else:
-        await mongodb.engine.save(Board(title=boardTitle, userid=userid))
+        await mongodb.engine.save(Board(title=boardTitle, userid=userid, ts=datetime.now()))
         context["boards"] = await mongodb.engine.find(Board)
     return templates.TemplateResponse("board.html", context)
 
 
 @router.post("/delete", response_class=HTMLResponse)
-async def boardDelete(request: Request, boardTitles: list = Form(...)):
-    delcnt = await mongodb.engine.remove(Board, query.in_(Board.title, boardTitles))
+async def boardDelete(request: Request, titles: list = Form(...)):
+    print(titles)
+    delcnt = await mongodb.engine.remove(Board, query.in_(Board.title, titles))
 
     context = await validLogonCtx({"request": request, "title": title, "subname": "게시판"}, request)
     context["boards"] = await mongodb.engine.find(Board)
