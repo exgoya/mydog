@@ -13,14 +13,17 @@
   <section>
   <h1>{{subBoard.title}}</h1>
   <p>{{subBoard.desc}}</p>
-  <p>
-    <span>{{subBoard.userid}}</span>
-  <span>{{subBoard.cts.strftime("%Y-%m-%d %H:%M")}}</span>
-  <span>{{subBoard.uts.strftime("%Y-%m-%d %H:%M")}}</span>
-  </p>
+  <article>
+    <p>
+      <b> 
+      <span>{{subBoard.userid}}</span> </b>
+    </p>
+    <p><small> create : <span>{{subBoard.cts.strftime("%Y-%m-%d %H:%M")}}</span></small></p>
+      <p><small> lest update : <span>{{subBoard.uts.strftime("%Y-%m-%d %H:%M")}}</span></small></p>
+  </article>
 </section>
-
 {% if logon %}
+<section>
   <details>
     <summary>수정</summary>
     <form method="post" name = "게시물 수정">
@@ -34,65 +37,67 @@
   
       <input type="submit" value="수정" formaction="/boards/sub/update"/>     
     </form>
-  </details>
     <form method="post" >
       <input type="hidden" name="boardId" value={{board.id}} size="20" required>
       <input type="hidden" name="subBoardId" value={{subBoard.id}} size="20" required>
       <input type="submit" value="삭제" formaction="/boards/sub/delete"/>     
     </form>
+  </details>
+</section>
 
 {% endif %}
 
-</header>  
-  {% if comments %}
+{% if comments %}
 
-      <h3 style="color: gray;text-align:center">{{comments|length}}개 댓글</h3>
-
-
-  <section>
-    <table>
-      <thead>
-      <th>댓글</th>
-      <th>작성일</th>
-      <th>작성자</th>
-      <th></th>
-      </thead>
-      <form action="/boards/delete" method="post">
-
-    {% set boardlink = "/boards/cmt/delete?cmtId=" %}
-
-    {% for comment in comments %}
-
-      <tbody>
-      <td>{{comment.desc}}</td>
-      <td>{{comment.cts.strftime("%Y-%m-%d %H:%M")}}</td>
-      <td>{{comment.userid}}</td>
-      <td><a href={{boardlink}}{{comment.id}}>삭제</a></td>
-
-    </tbody>
-    {% endfor %}
-    </table>
-    </section>
+<h3 style="color: gray;text-align:center">{{comments|length}}개 댓글</h3>
 
 
-  {% else %}
-  <center><h3 style="color: gray">댓글이 없습니다</h3></center>
-  {% endif %}
+<section>
+<table>
+<thead>
+<th>댓글</th>
+<th>작성일</th>
+<th>작성자</th>
+<th></th>
+</thead>
+<form action="/boards/delete" method="post">
 
-  {% if logon %}
+{% set boardlink = "/boards/cmt/delete?cmtId=" %}
+
+{% for comment in comments %}
+
+<tbody>
+<td>{{comment.desc}}</td>
+<td>{{comment.cts.strftime("%Y-%m-%d %H:%M")}}</td>
+<td>{{comment.userid}}</td>
+<td><a href={{boardlink}}{{comment.id}}>삭제</a></td>
+
+</tbody>
+{% endfor %}
+</table>
+</section>
 
 
+{% else %}
+<center><h3 style="color: gray">댓글이 없습니다</h3></center>
+{% endif %}
+
+{% if logon %}
+
+<article>
 <section>
   <form method="post" name = "댓글 추가">
     <input type="hidden" name="userid" value={{logon}} size="20" required>
     <input type="hidden" name="boardId" value={{board.id}} size="20" required>
     <input type="hidden" name="subBoardId" value={{subBoard.id}} size="20" required>
-    <input type="text" placeholder="댓글" name="desc" size="20" required/>
+    <input type="text" placeholder="댓글" name="desc" width="1em" required/>
 
     <input type="submit" value="추가" formaction="/boards/cmt/add"/>     
 
   </form>
 </section>
+</article>
+</header>  
 </main>
 {% endif %}
 

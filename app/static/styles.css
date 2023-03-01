@@ -1,1 +1,8 @@
-nav {border-bottom: black 1px;}
+
+nav {margin-bottom: 0;}
+nav{border-bottom: solid #118bee}
+section {padding-top : 1em}
+header{padding-bottom: 0;}
+main{padding-top:0}
+input{ display:block; width:auto }
+details{color:#118bee}
