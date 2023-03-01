@@ -1,9 +1,12 @@
 {% include "header.html" %}
-
-
-{% if msg %}
-{{msg}}
+{%if msg%}
+{% set alertmsg = msg %}
+<script> 
+  
+  alert("{{alertmsg}}") ;
+</script>
 {% endif %}
+
 
       <section>
     

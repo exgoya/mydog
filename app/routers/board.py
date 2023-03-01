@@ -1,5 +1,5 @@
 
-from fastapi import APIRouter, Request, Form, exception_handlers
+from fastapi import APIRouter, Request, Form
 
 
 from fastapi.responses import HTMLResponse
@@ -28,6 +28,7 @@ validLogonCtx = Auth.validLogonCtx
 async def boardGet(request: Request):
 
     boards = await mongodb.engine.find(Board)
+    
 
     context = {"request": request, "title": title,
                "subname": "게시판", "boards": boards}

@@ -1,7 +1,9 @@
-
 fastapi
 uvicorn
 odmantic
 motor
 aiohttp
 jinja2
+black
+flake8
+python-multipart
