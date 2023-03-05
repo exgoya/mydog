@@ -13,6 +13,7 @@
       <h3 style="color: gray;text-align:center">{{boards|length}}개 게시판</h3>
 
   <section id="docs">
+      <form action="/boards/delete" method="post">
     <table>
       <thead>
         {% if logon %}
@@ -22,7 +23,6 @@
       <th>만든날짜</th>
       <th>생성자</th>
       </thead>
-      <form action="/boards/delete" method="post">
     {% for board in boards %}
 
       <tbody>
