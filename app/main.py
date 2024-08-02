@@ -134,7 +134,7 @@ async def validId(request: Request, userid: str):
     return templates.TemplateResponse("regist.html", context)
 
 
-@ app.get("/search", response_class=HTMLResponse)
+@app.get("/search", response_class=HTMLResponse)
 async def search(request: Request, q: str):
 
     # 1. 쿼리에서 검색어 추출
